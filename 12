@@ -1,8 +1,8 @@
 import random
 import numpy as np
-from math import factorial
+from  functools import lru_cache
 
-def make_matrix(t):
+def make_matrix(t): #Создаём случайную матрицу
     k = random.randint(2, 6)
     n = []
     for i in range(k):
@@ -13,9 +13,18 @@ def make_matrix(t):
     if abs(np.linalg.det(n)) == 0:
         return make_matrix(t)
     else:
+
         return matrix
 
-def Line(t):
+
+@lru_cache(maxsize=None)
+def fact(n):
+    if n == 0:
+        return 1
+    return n * fact(n-1)
+
+
+def Line(t): #производим вычисления над матрицей
     if t < 0:
         print('Введите положительное число')
         return
@@ -27,7 +36,7 @@ def Line(t):
     flag = True
     while flag:
         try:
-            matrix = matrix * factorial(n - 1)
+            matrix = matrix * fact(n - 1)
             answ += (((-1) ** n) * (abs(np.linalg.det(matrix)) / (n - 1)))
             n += 1
             if len(str(answ).split('.')) >= 2:
@@ -47,6 +56,8 @@ def Line(t):
     print('Суммa знакопеременного ряда (|х*(2n+1)!|)/(2n+1)! :')
     print(answ)
     print('Для повторного апуска напишите новое число :')
+
+
 
 print('Введите t - кол-во знаков после запятой: ')
 while True:
