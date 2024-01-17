@@ -1,6 +1,5 @@
 import random
 import numpy as np
-from  functools import lru_cache
 
 def make_matrix(t): #Создаём случайную матрицу
     k = random.randint(2, 6)
@@ -17,11 +16,14 @@ def make_matrix(t): #Создаём случайную матрицу
         return matrix
 
 
-@lru_cache(maxsize=None)
 def fact(n):
-    if n == 0:
-        return 1
-    return n * fact(n-1)
+    if n in result:
+        return result[n]
+    else:
+        result[n] = n * factorial(n - 1)
+        return result[n]
+
+result = {}
 
 
 def Line(t): #производим вычисления над матрицей
