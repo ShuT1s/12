@@ -1,69 +1,52 @@
-import random
+#13. Вычислить сумму знакопеременного ряда (|х(n-1)|)/(n-1)!, где х-матрица ранга к (к и
+# матрица задаются случайным образом), n - номер слагаемого. Сумма считается вычисленной,
+# если точность вычислений будет не меньше t знаков после запятой.
+# У алгоритма д.б. линейная сложность. Знак первого слагаемого  -.
 import numpy as np
-
-def make_matrix(t): #Создаём случайную матрицу
-    k = random.randint(2, 6)
-    n = []
-    for i in range(k):
-        n.append([])
-        for j in range(k):
-            n[i].append(random.choice([-1, 1]))
-    matrix = np.array(n)
-    if abs(np.linalg.det(n)) == 0:
-        return make_matrix(t)
-    else:
-
-        return matrix
-
-
-def fact(n):
-    if n in result:
-        return result[n]
-    else:
-        result[n] = n * factorial(n - 1)
-        return result[n]
-
-result = {}
-
-
-def Line(t): #производим вычисления над матрицей
-    if t < 0:
-        print('Введите положительное число')
-        return
-    matrix = make_matrix(t)
-    print("Начальная матрица: ")
-    print(matrix)
-    answ = 0.0
-    n = 2
-    flag = True
-    while flag:
-        try:
-            matrix = matrix * fact(n - 1)
-            answ += (((-1) ** n) * (abs(np.linalg.det(matrix)) / (n - 1)))
-            n += 1
-            if len(str(answ).split('.')) >= 2:
-                if len(str(answ).split('.')[1]) > t:
-                    flag = False
-                elif str(answ).find('e') != -1:
-                    try:
-                        flag = (len(str(answ).split('.')[1]) + int(str(answ).split('-')[1])) < t
-                    except:
-                        flag = (len(str(answ).split('.')[1]) + int(str(answ).split('+')[1])) < t
-        except np.core._exceptions.UFuncTypeError:
-            print('Числа в матрице вышли слишком большими')
-            print('Для повторного апуска напишите новое число :')
-            return
-    print('финальный вид матрицы:')
-    print(matrix)
-    print('Суммa знакопеременного ряда (|х*(2n+1)!|)/(2n+1)! :')
-    print(answ)
-    print('Для повторного апуска напишите новое число :')
-
-
-
-print('Введите t - кол-во знаков после запятой: ')
+import random
+from decimal import Decimal
 while True:
-    try:
-        Line(int(input()))
-    except ValueError:
-        print('Введите чилсло')
+#ввод данных с проверкой
+    while True:
+        t = input("Введите количество знаков после запятой для точности вычислений: ")
+        if t.isdigit():
+            if int(t) == 0:
+                print("Вы ввели ноль. Введите другое число")
+            else:
+                t = int(t)
+                break
+        else:
+            print("Вы должны были ввести натуральное число")
+    #формирование матрицы
+    k = random.randint(1, 5)
+    matrix = np.random.uniform(-1, 1, size=(k, k))
+    #вывод матрицы
+    print("Сгенерирована матрица:\n", matrix)
+    #вычисление суммы знакопеременного ряда
+    summ = 0
+    factorial = 1
+    i = 1
+    #работа с первым слагаемым
+    prev = -abs(np.linalg.det((matrix * factorial).astype("float64")) / factorial)  #prev- предыд слагаемое, мы учитываем самое первое, чтобы дать ему знак "-" по условию
+    summ += prev  #добавляем его в сумму ряда
+    sign = "-"  #знак предыдущего числа. в данном случае это "-"
+    factorial += 1  #факториал увел на 1, т.к. рассм след слагаемое
+    #работа с остальными слагаемыми
+    while True:
+        factorial = factorial * i
+        i += 1
+        value = abs(np.linalg.det((matrix * factorial).astype("float64")) / factorial)
+        diff = abs(prev) - abs(value)  #разница предыд и текущ слагаемых.
+        if Decimal(str(diff)).as_tuple().exponent * (-1) < t:  #находим разницу между предыд. и текущ. числами, если в результате кол-во
+            break  #знаков после запятой меньше заданного кол-ва t, то выходим из цикла
+        if sign == "+":  #учет знаков слагаемых
+            summ += -value
+            sign = "-"
+        elif sign == "-":
+            summ += value
+            sign = "+"
+    #вывод результатов
+    print(f"Сумма ряда равна: {summ:.{t}f}")
+    a=input("Для завершения работы нижмите 1:")
+    if a=="1":
+        break
